@@ -23,6 +23,7 @@ $(document).ready(function () {
 					alert("Login success");
 					authenticated = true;
 					localStorage.setItem("userInfo", JSON.stringify(data));
+					localStorage.setItem("loggedInEmail", data.email);
 					$("body").pagecontainer("change", "#homePage");
 				} else {
 					alert("Login failed");
@@ -166,6 +167,8 @@ $(document).ready(function () {
 			}
 		}
 	});
+
+	
 
 	/** ---------------------- Page Events ---------------------- **/
 
