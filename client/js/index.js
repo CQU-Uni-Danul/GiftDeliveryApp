@@ -179,30 +179,31 @@ $(document).ready(function () {
         const response = await fetch(`http://localhost:3000/api/orders/${email}`);
         const orders = await response.json();
 
-        const orderListContainer = document.getElementById("order-list"); // Make sure this ID exists in your HTML
+        const orderListContainer = document.getElementById("orderList"); 
         orderListContainer.innerHTML = "";
 
         if (orders.length === 0) {
-            orderListContainer.innerHTML = "<p>No past orders found.</p>";
+            orderListContainer.innerHTML = "<li>No past orders found.</li>";
             return;
         }
 
         orders.forEach(order => {
-            const div = document.createElement("div");
-            div.classList.add("order-item");
-
-            div.innerHTML = `
+            const li = document.createElement("li");
+            li.innerHTML = `
                 <h3>Order #${order.orderNo}</h3>
                 <p><strong>Date:</strong> ${order.date}</p>
                 <p><strong>Item:</strong> ${order.itemName}</p>
                 <p><strong>Price:</strong> ${order.itemPrice}</p>
                 <p><strong>Distributor:</strong> ${order.distributor}</p>
                 <p><strong>Shipping Address:</strong> ${order.address}, ${order.state}, ${order.postcode}</p>
-                <hr/>
             `;
-
-            orderListContainer.appendChild(div);
+            orderListContainer.appendChild(li);
         });
+
+        // Refresh the list view if using jQuery Mobile
+        if ($(orderListContainer).hasClass("ui-listview")) {
+            $(orderListContainer).listview("refresh");
+        }
 
     } catch (error) {
         console.error("❌ Error fetching orders:", error);
@@ -211,7 +212,12 @@ $(document).ready(function () {
 }
 
 
+
 	/** ---------------------- Page Events ---------------------- **/
+
+	$(document).on("pageshow", "#orderListPage", function () {
+    	fetchAndDisplayOrders();
+	});
 
 	$(document).on("pagebeforeshow", "#loginPage", function () {
 		localStorage.removeItem("userInfo");
@@ -278,5 +284,14 @@ $(document).ready(function () {
 			});
 		});
 	});
+
+	document.getElementById('doneButton').addEventListener('click', function() {
+    // Navigate to Home Page
+    $.mobile.changePage('#homePage', {
+        transition: 'slide',
+        reverse: false
+    });
+});
+
 
 });
