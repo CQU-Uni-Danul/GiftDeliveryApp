@@ -23,7 +23,7 @@ $(document).ready(function () {
 					alert("Login success");
 					authenticated = true;
 					localStorage.setItem("userInfo", JSON.stringify(data));
-					localStorage.setItem("loggedInEmail", data.email);
+					localStorage.setItem("customerEmail", inputData.email);
 					$("body").pagecontainer("change", "#homePage");
 				} else {
 					alert("Login failed");
@@ -97,7 +97,12 @@ $(document).ready(function () {
 			orderInfo.orderNo = Math.trunc(Math.random() * 900000 + 100000);
 			orderInfo.date = new Date().toLocaleDateString();  // Add dispatch date
 
+			// Store order in pastOrders (for displaying order history)
+			let pastOrders = JSON.parse(localStorage.getItem("pastOrders")) || [];
+			pastOrders.push(orderInfo);
+			localStorage.setItem("pastOrders", JSON.stringify(pastOrders));
 			localStorage.setItem("orderInfo", JSON.stringify(orderInfo));
+
 			if (debug) alert(JSON.stringify(orderInfo));
 
 			$.post(domainUrl + "/insertOrderData", orderInfo, function (data, status) {
@@ -168,49 +173,7 @@ $(document).ready(function () {
 		}
 	});
 
-	async function fetchAndDisplayOrders() {
-    const email = localStorage.getItem("loggedInEmail");
-    if (!email) {
-        alert("You must be logged in to view past orders.");
-        return;
-    }
-
-    try {
-        const response = await fetch(`http://localhost:3000/api/orders/${email}`);
-        const orders = await response.json();
-
-        const orderListContainer = document.getElementById("order-list"); // Make sure this ID exists in your HTML
-        orderListContainer.innerHTML = "";
-
-        if (orders.length === 0) {
-            orderListContainer.innerHTML = "<p>No past orders found.</p>";
-            return;
-        }
-
-        orders.forEach(order => {
-            const div = document.createElement("div");
-            div.classList.add("order-item");
-
-            div.innerHTML = `
-                <h3>Order #${order.orderNo}</h3>
-                <p><strong>Date:</strong> ${order.date}</p>
-                <p><strong>Item:</strong> ${order.itemName}</p>
-                <p><strong>Price:</strong> ${order.itemPrice}</p>
-                <p><strong>Distributor:</strong> ${order.distributor}</p>
-                <p><strong>Shipping Address:</strong> ${order.address}, ${order.state}, ${order.postcode}</p>
-                <hr/>
-            `;
-
-            orderListContainer.appendChild(div);
-        });
-
-    } catch (error) {
-        console.error("❌ Error fetching orders:", error);
-        alert("Failed to load past orders.");
-    }
-}
-
-
+	
 	/** ---------------------- Page Events ---------------------- **/
 
 	$(document).on("pagebeforeshow", "#loginPage", function () {
@@ -245,6 +208,40 @@ $(document).ready(function () {
 		}
 	});
 
+	/** ---------------------- Order List Page ---------------------- **/
+
+	$(document).on("pagebeforeshow", "#orderListPage", function () {
+    const customerEmail = localStorage.getItem("customerEmail"); // Assuming email is saved in localStorage
+
+    if (customerEmail) {
+        fetch(`http://localhost:5000/api/orders/${customerEmail}`)  // API request to backend
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched Orders:", data);  // Check if the orders are correctly fetched
+                const orderList = $("#orderList");
+                orderList.empty(); // Clear any existing orders in the list
+
+                if (data.length === 0) {
+                    orderList.append("<li>No past orders available.</li>");
+                } else {
+                    data.forEach(order => {
+                        const listItem = $("<li>").text(`Order #${order.orderNo} - ${order.itemName} - ${order.date}`);
+                        orderList.append(listItem);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching past orders:", error);
+                const orderList = $("#orderList");
+                orderList.append("<li>Error fetching past orders. Please try again later.</li>");
+            });
+    } else {
+        console.error("User email not found in localStorage.");
+        const orderList = $("#orderList");
+        orderList.append("<li>No email found. Please log in first.</li>");
+    }
+});
+
 	/** ---------------------- Add User (Signup) Handler ---------------------- **/
 
 	$(document).on("pagecreate", "#signupPage", function () {
@@ -269,6 +266,7 @@ $(document).ready(function () {
 				data: JSON.stringify(formData),
 				success: function (response) {
 					alert("User registered successfully.");
+
 					$.mobile.changePage("#loginPage");
 				},
 				error: function (xhr, status, error) {
