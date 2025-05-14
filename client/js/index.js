@@ -200,4 +200,39 @@ $(document).ready(function () {
 			$('#orderInfo').append('<h3>There is no order to display</h3>');
 		}
 	});
+
+	/** ---------------------- Add User (Signup) Handler ---------------------- **/
+
+	$(document).on("pagecreate", "#signupPage", function () {
+		$("#signupForm").on("submit", function (e) {
+			e.preventDefault();
+
+			const formData = {
+				email: $("#email").val(),
+				password: $("#password").val(),
+				firstName: $("#firstName").val(),
+				lastName: $("#lastName").val(),
+				state: $("#state").val(),
+				phone: $("#phone").val(),
+				address: $("#address").val(),
+				postcode: $("#postcode").val()
+			};
+
+			$.ajax({
+				url: domainUrl + "/addUser",
+				method: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(formData),
+				success: function (response) {
+					alert("User registered successfully.");
+					$.mobile.changePage("#loginPage");
+				},
+				error: function (xhr, status, error) {
+					console.error("Signup failed:", error);
+					alert("Signup failed. Please try again.");
+				}
+			});
+		});
+	});
+
 });

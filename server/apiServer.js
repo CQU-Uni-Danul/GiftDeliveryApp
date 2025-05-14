@@ -92,6 +92,21 @@ app.post('/verifyUserCredential', async (req, res) => {
 	}
 });
 
+
+app.post('/addUser', async (req, res) => {
+    const { email, password, firstName, lastName, state, phone, address, postcode } = req.body;
+
+    try {
+        await userCollection.insertOne({
+            email, password, firstName, lastName, state, phone, address, postcode
+        });
+        res.status(200).json({ message: "User added successfully" });
+    } catch (err) {
+        console.error("Error inserting user:", err);
+        res.status(500).json({ message: "Failed to add user" });
+    }
+});
+
 // Order submission: Insert order data
 app.post('/insertOrderData', async (req, res) => {
 	const orderData = req.body;
