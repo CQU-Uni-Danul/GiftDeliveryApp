@@ -23,6 +23,7 @@ $(document).ready(function () {
 					alert("Login success");
 					authenticated = true;
 					localStorage.setItem("userInfo", JSON.stringify(data));
+					localStorage.setItem("loggedInEmail", data.email);
 					$("body").pagecontainer("change", "#homePage");
 				} else {
 					alert("Login failed");
@@ -166,6 +167,49 @@ $(document).ready(function () {
 			}
 		}
 	});
+
+	async function fetchAndDisplayOrders() {
+    const email = localStorage.getItem("loggedInEmail");
+    if (!email) {
+        alert("You must be logged in to view past orders.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/orders/${email}`);
+        const orders = await response.json();
+
+        const orderListContainer = document.getElementById("order-list"); // Make sure this ID exists in your HTML
+        orderListContainer.innerHTML = "";
+
+        if (orders.length === 0) {
+            orderListContainer.innerHTML = "<p>No past orders found.</p>";
+            return;
+        }
+
+        orders.forEach(order => {
+            const div = document.createElement("div");
+            div.classList.add("order-item");
+
+            div.innerHTML = `
+                <h3>Order #${order.orderNo}</h3>
+                <p><strong>Date:</strong> ${order.date}</p>
+                <p><strong>Item:</strong> ${order.itemName}</p>
+                <p><strong>Price:</strong> ${order.itemPrice}</p>
+                <p><strong>Distributor:</strong> ${order.distributor}</p>
+                <p><strong>Shipping Address:</strong> ${order.address}, ${order.state}, ${order.postcode}</p>
+                <hr/>
+            `;
+
+            orderListContainer.appendChild(div);
+        });
+
+    } catch (error) {
+        console.error("❌ Error fetching orders:", error);
+        alert("Failed to load past orders.");
+    }
+}
+
 
 	/** ---------------------- Page Events ---------------------- **/
 

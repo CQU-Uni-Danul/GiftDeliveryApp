@@ -67,6 +67,20 @@ app.get('/getOrderDataTest', async (req, res) => {
 	}
 });
 
+
+app.get("/api/orders/:email", async (req, res) => {
+    const customerEmail = req.params.email;
+
+    try {
+        const userOrders = await orderCollection.find({ customerEmail }).toArray();
+        res.json(userOrders);
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ message: "Failed to fetch orders" });
+    }
+});
+
+
 // Login: Verify user credentials
 app.post('/verifyUserCredential', async (req, res) => {
 	const { email, password } = req.body;
