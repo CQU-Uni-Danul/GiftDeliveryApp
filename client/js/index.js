@@ -1,5 +1,8 @@
 // Server base domain url 
-const domainUrl = "http://localhost:3000";  // Use this for local testing
+// const domainUrl = "http://localhost:3000";  // Use this for local testing
+
+const domainUrl = "https://giftdeliveryapp-1.onrender.com";  // Use this for local testing
+
 
 let debug = true;
 let authenticated = false;
@@ -176,7 +179,7 @@ $(document).ready(function () {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/api/orders/${email}`);
+        const response = await fetch(`${domainUrl}/api/orders/${email}`);
         const orders = await response.json();
 
         const orderListContainer = document.getElementById("orderList"); 
@@ -220,7 +223,7 @@ async function deleteOrders() {
     return;
   }
   try {
-    const response = await fetch(`http://localhost:3000/api/orders/${email}`, {
+    const response = await fetch(`${domainUrl}/api/orders/${email}`, {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error("Delete failed");
