@@ -152,5 +152,5 @@ app.post('/insertOrderData', async (req, res) => {
 
 // Start server
 app.listen(port, () => {
-	console.log(`🚀 Gift Delivery server is running at: http://localhost:${port}`);
+	console.log(`Gift Delivery server is running at Port ${port}`);
 });
