@@ -67,7 +67,7 @@ app.get('/getOrderDataTest', async (req, res) => {
 	}
 });
 
-
+//orders list page
 app.get("/api/orders/:email", async (req, res) => {
     const customerEmail = req.params.email;
 
@@ -80,6 +80,20 @@ app.get("/api/orders/:email", async (req, res) => {
     }
 });
 
+// Delete orders by customerEmail
+app.delete("/api/orders/:email", async (req, res) => {
+    const customerEmail = req.params.email;
+    console.log(`Deleting orders for email: ${customerEmail}`);
+
+    try {
+        const result = await orderCollection.deleteMany({ customerEmail });
+        console.log(`Deleted ${result.deletedCount} orders.`);
+        res.json({ deletedCount: result.deletedCount });
+    } catch (error) {
+        console.error("Error deleting orders:", error);
+        res.status(500).json({ error: "Failed to delete orders." });
+    }
+});
 
 // Login: Verify user credentials
 app.post('/verifyUserCredential', async (req, res) => {
