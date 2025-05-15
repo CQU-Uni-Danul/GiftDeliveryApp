@@ -1,7 +1,7 @@
 // Server base domain url 
-const domainUrl = "http://localhost:3000";  // Use this for local testing
+// const domainUrl = "http://localhost:3000";  // Use this for local testing
 
-// const domainUrl = "https://giftdeliveryapp-1.onrender.com";  // Use this for render testing
+const domainUrl = "https://giftdeliveryapp-1.onrender.com";  // Use this for render testing
 
 
 let debug = true;
