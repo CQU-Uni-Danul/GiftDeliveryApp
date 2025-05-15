@@ -23,7 +23,7 @@ $(document).ready(function () {
 					alert("Login success");
 					authenticated = true;
 					localStorage.setItem("userInfo", JSON.stringify(data));
-					localStorage.setItem("customerEmail", inputData.email);
+					localStorage.setItem("loggedInEmail", data.email);
 					$("body").pagecontainer("change", "#homePage");
 				} else {
 					alert("Login failed");
@@ -97,12 +97,7 @@ $(document).ready(function () {
 			orderInfo.orderNo = Math.trunc(Math.random() * 900000 + 100000);
 			orderInfo.date = new Date().toLocaleDateString();  // Add dispatch date
 
-			// Store order in pastOrders (for displaying order history)
-			let pastOrders = JSON.parse(localStorage.getItem("pastOrders")) || [];
-			pastOrders.push(orderInfo);
-			localStorage.setItem("pastOrders", JSON.stringify(pastOrders));
 			localStorage.setItem("orderInfo", JSON.stringify(orderInfo));
-
 			if (debug) alert(JSON.stringify(orderInfo));
 
 			$.post(domainUrl + "/insertOrderData", orderInfo, function (data, status) {
@@ -244,32 +239,6 @@ async function deleteOrders() {
 
 
 
-async function deleteOrders() {
-  const email = localStorage.getItem("loggedInEmail");
-  if (!email) {
-    alert("User not logged in");
-    return;
-  }
-  try {
-    const response = await fetch(`http://localhost:3000/api/orders/${email}`, {
-      method: 'DELETE'
-    });
-    if (!response.ok) throw new Error("Delete failed");
-    const data = await response.json();
-
-    // sessionStorage.setItem("deletedCount", data.deletedCount);
-	sessionStorage.setItem("deletedOrdersCount", data.deletedCount);
-
-    $.mobile.changePage("#deleteConfirmPage");
-
-  } catch (err) {
-    alert("Failed to delete orders");
-    console.error(err);
-  }
-}
-
-
-	
 	/** ---------------------- Page Events ---------------------- **/
 
 	$(document).on("pageshow", "#orderListPage", function () {
@@ -308,40 +277,6 @@ async function deleteOrders() {
 		}
 	});
 
-	/** ---------------------- Order List Page ---------------------- **/
-
-	$(document).on("pagebeforeshow", "#orderListPage", function () {
-    const customerEmail = localStorage.getItem("customerEmail"); // Assuming email is saved in localStorage
-
-    if (customerEmail) {
-        fetch(`http://localhost:5000/api/orders/${customerEmail}`)  // API request to backend
-            .then(response => response.json())
-            .then(data => {
-                console.log("Fetched Orders:", data);  // Check if the orders are correctly fetched
-                const orderList = $("#orderList");
-                orderList.empty(); // Clear any existing orders in the list
-
-                if (data.length === 0) {
-                    orderList.append("<li>No past orders available.</li>");
-                } else {
-                    data.forEach(order => {
-                        const listItem = $("<li>").text(`Order #${order.orderNo} - ${order.itemName} - ${order.date}`);
-                        orderList.append(listItem);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching past orders:", error);
-                const orderList = $("#orderList");
-                orderList.append("<li>Error fetching past orders. Please try again later.</li>");
-            });
-    } else {
-        console.error("User email not found in localStorage.");
-        const orderList = $("#orderList");
-        orderList.append("<li>No email found. Please log in first.</li>");
-    }
-});
-
 	/** ---------------------- Add User (Signup) Handler ---------------------- **/
 
 	$(document).on("pagecreate", "#signupPage", function () {
@@ -366,7 +301,6 @@ async function deleteOrders() {
 				data: JSON.stringify(formData),
 				success: function (response) {
 					alert("User registered successfully.");
-
 					$.mobile.changePage("#loginPage");
 				},
 				error: function (xhr, status, error) {
