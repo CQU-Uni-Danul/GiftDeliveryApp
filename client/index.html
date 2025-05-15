@@ -106,12 +106,12 @@
 						</a>
 					</li>
 					<li>
-						<a href="#deleteConfirmationPage">
+						<li>
+						<a href="#" id="deleteOrdersLink">
 							<img src="img/delete.png" />
-							<div>
-								<h3 class="fcolor">Delete orders</h3>
-							</div>
+							<div><h3 class="fcolor">Delete orders</h3></div>
 						</a>
+						</li>
 					</li>
 				</ul>
 			</div>
@@ -145,24 +145,25 @@
 	</div>
 
 	<!-- Delete Confirmation Page -->
-	<div data-role="page" id="deleteConfirmationPage">
-		<div data-role="header" data-theme="d" data-position="fixed">
-			<a href="javascript:history.go(-1)"
-				class="ui-btn ui-icon-carat-l ui-btn-icon-notext ui-corner-all">Back</a>
-			<h1>Delete Orders</h1>
-			<a href="#homePage" class="ui-btn ui-icon-home ui-btn-icon-notext ui-corner-all">Home</a>
-		</div>
-		<div data-role="content">
-			<div class="wrap">
-				<p>Are you sure you want to delete all your past orders?</p>
-				<a href="#" id="confirmDeleteButton" class="ui-btn ui-shadow ui-corner-all ui-btn-d">Yes, Delete All</a>
-				<a href="#homePage" class="ui-btn ui-shadow ui-corner-all">Cancel</a>
-			</div>
-		</div>
-		<div data-role="footer" data-theme="d" data-position="fixed" class="footer">
-			<p>Copyright © Gift Delivery 2024</p>
-		</div>
-	</div>
+<div data-role="page" id="deleteConfirmPage">
+    <div data-role="header" data-theme="d" data-position="fixed">
+        <h1>Orders Deleted</h1>
+    </div>
+    <div data-role="content">
+        <div class="wrap">
+            <p id="deletedCountMessage" style="text-align:center; font-size:18px;"></p>
+            <div class="button" style="text-align:center;">
+				<div data-role="content">
+    				<p id="deleteMessage"></p>   
+				</div>
+                <a href="#homePage" class="ui-btn ui-btn-inline" style="background:#33ccff; width:150px;">Done</a>
+            </div>
+        </div>
+    </div>
+    <div data-role="footer" data-theme="d" data-position="fixed" class="footer">
+        <p>Copyright © Gift Delivery 2024</p>
+    </div>
+</div>
 
 	
     <!------------------------Select page---------------------------->

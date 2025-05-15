@@ -217,6 +217,58 @@ $(document).ready(function () {
 }
 
 
+
+async function deleteOrders() {
+  const email = localStorage.getItem("loggedInEmail");
+  if (!email) {
+    alert("User not logged in");
+    return;
+  }
+  try {
+    const response = await fetch(`http://localhost:3000/api/orders/${email}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error("Delete failed");
+    const data = await response.json();
+
+    // sessionStorage.setItem("deletedCount", data.deletedCount);
+	sessionStorage.setItem("deletedOrdersCount", data.deletedCount);
+
+    $.mobile.changePage("#deleteConfirmPage");
+
+  } catch (err) {
+    alert("Failed to delete orders");
+    console.error(err);
+  }
+}
+
+
+
+async function deleteOrders() {
+  const email = localStorage.getItem("loggedInEmail");
+  if (!email) {
+    alert("User not logged in");
+    return;
+  }
+  try {
+    const response = await fetch(`http://localhost:3000/api/orders/${email}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error("Delete failed");
+    const data = await response.json();
+
+    // sessionStorage.setItem("deletedCount", data.deletedCount);
+	sessionStorage.setItem("deletedOrdersCount", data.deletedCount);
+
+    $.mobile.changePage("#deleteConfirmPage");
+
+  } catch (err) {
+    alert("Failed to delete orders");
+    console.error(err);
+  }
+}
+
+
 	
 	/** ---------------------- Page Events ---------------------- **/
 
@@ -333,5 +385,17 @@ $(document).ready(function () {
     });
 });
 
+$(document).on("pagecreate", "#homePage", function() {
+  $("#deleteOrdersLink").on("click", function(e) {
+    e.preventDefault();
+    deleteOrders();
+	
+  });
+});
+
+$(document).on("pageshow", "#deleteConfirmPage", function () {
+  const count = sessionStorage.getItem("deletedOrdersCount") || 0;
+  $("#deleteMessage").text(`${count} order(s) deleted`);
+});
 
 });
